@@ -5,9 +5,8 @@
 {% endblock %}
 
 {% block body %}
-    
-    <h1 style="text-align:center"> Airlines</h1> 
-    <h2 style="text-align:left">Book Flight</h2>
+
+<h2 style="text-align:left">Book Flight</h2>
 
     <form action="{{ url_for('book') }}" method="post">
 
@@ -24,15 +23,22 @@
         </div>
 
         <div class="form-group">
-            <input type="date" style="text-align:center" name="date">
-        </div> 
-    
-        <div class="form-group">
-            <button style="text-align:center" class="btn btn-primary">Book Flight</button>
+            <input type="date" style="text-align:center" name="date" required>
         </div>
-	 <a href="{{ url_for('flights') }}">
-	 Flight details 
-         </a>
+
+        <div class="form-group">
+          <script
+            src="https://checkout.stripe.com/checkout.js"
+            class="stripe-button"
+            data-key="{{ pub_key }}"
+            data-amount="19900"
+            data-name="Demo Site"
+            data-description="Ticket charge"
+            data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+            data-locale="auto">
+          </script>
+        </div>
 
     </form>
+
 {% endblock %}
