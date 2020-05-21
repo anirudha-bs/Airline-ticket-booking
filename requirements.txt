@@ -1,0 +1,6 @@
+flask
+stripe
+sqlalchemy
+psycopg2
+wheel 
+gunicorn
