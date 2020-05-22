@@ -1,62 +1,46 @@
 import os
-import stripe
+import razorpay
+import json
 from flask import Flask, render_template, request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 
-app = Flask(__name__)
+app = Flask(__name__,static_folder = "static")
 
 engine = create_engine(os.environ.get("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-pub_key='pk_test_LzADRLfG3h8oxkH86qCszlhb00pt7VeSDB'
-STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
-stripe.api_key = STRIPE_SECRET_KEY
+razorpay_client = razorpay.Client(auth=("rzp_test_cdJnNzG9Ar1H1T",os.environ.get("RAZORPAY_SECRET_KEY")))
 
 @app.route("/")
 def index():
     flights = db.execute("SELECT * FROM flights").fetchall()
-    return render_template("index.html", flights=flights, pub_key=pub_key)
+    return render_template("index.html", flights=flights)
 
 @app.route("/book", methods=["POST"])
 def book():
-    """Book a flight."""
-
-
     name = request.form.get("name")
     date= request.form.get("date")
-    if date=='':
-        return render_template("error.html", message="Enter valid date")
+
     try:
         flight_id = int(request.form.get("flight_id"))
     except ValueError:
         return render_template("error.html", message="Payment failed or Invalid flight number.")
 
-
     if db.execute("SELECT * FROM flights WHERE id = :id", {"id": flight_id}).rowcount == 0:
         return render_template("error.html", message="No such flight with that id.")
 
     try:
-      customer = stripe.Customer.create(email=request.form['stripeEmail'], source=request.form['stripeToken'])
-
-      amount=19900
-
-      stripe.Charge.create(
-      customer=customer.id,
-      amount=amount,
-      currency='usd',
-      description='Flight ticket'
-      )
+      amount = 1000000
+      payment_id = request.form['razorpay_payment_id']
+      razorpay_client.payment.capture(payment_id, amount)
+      db.execute("INSERT INTO passengers (name, flight_id, date) VALUES (:name, :flight_id, :date)",{"name": name, "flight_id": flight_id, "date":date})
+      db.commit()
+      return render_template("success.html",info=json.dumps(razorpay_client.payment.fetch(payment_id)))
 
     except:
-        return render_template("error.html", message="Payment failed")
-
-
-    db.execute("INSERT INTO passengers (name, flight_id, date) VALUES (:name, :flight_id, :date)",
-            {"name": name, "flight_id": flight_id, "date":date})
-    db.commit()
-    return render_template("success.html")
+      return render_template("error.html", message="Payment failed")
 
 
 @app.route("/flights")

@@ -6,11 +6,9 @@
 
 {% block body %}
     <h1>Success!</h1>
-     Payment successful.
-     You have successfully booked your flight.
-     <br></br>
-     <a href="{{ url_for('flights') }}">
-  	 Flight details 
-     </a>
+    <h2>Payment successful. You have successfully booked your flight.</h2>
+    <h3>Your payment info
+     {{info}}
+    </h3>
 
 {% endblock %}

@@ -8,8 +8,7 @@
 
 <h2 style="text-align:left">Book Flight</h2>
 
-    <form action="{{ url_for('book') }}" method="post">
-
+<form action="{{ url_for('book') }}" method="POST">
         <div class="form-group">
             <select class="form-control" name="flight_id">
                 {% for flight in flights %}
@@ -19,25 +18,27 @@
         </div>
 
         <div class="form-group">
-            <input class="form-control" style="text-align:center" name="name" placeholder="Passenger Name">
+            <input class="form-control" style="text-align:center" name="name" placeholder="Passenger Name" required>
         </div>
 
         <div class="form-group">
             <input type="date" style="text-align:center" name="date" required>
         </div>
 
-        <div class="form-group">
-          <script
-            src="https://checkout.stripe.com/checkout.js"
-            class="stripe-button"
-            data-key="{{ pub_key }}"
-            data-amount="19900"
-            data-name="Demo Site"
-            data-description="Ticket charge"
-            data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-            data-locale="auto">
+          <script type="text/javascript"
+              src="https://checkout.razorpay.com/v1/checkout.js"
+              data-key="rzp_test_cdJnNzG9Ar1H1T"
+              data-amount="1000000"
+              data-name="Daft Punk"
+              data-description="Purchase Description"
+              data-image="/static/vk.jpg"
+              data-netbanking="true"
+              data-description="Tron Legacy"
+              data-notes.shopping_order_id="21">
           </script>
-        </div>
+          <input type="hidden" name="shopping_order_id" value="21">
+
+        </form>
 
     </form>
 
