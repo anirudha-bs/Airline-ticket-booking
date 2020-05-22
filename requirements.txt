@@ -1,7 +1,6 @@
 flask
-stripe
+razorpay
 sqlalchemy
 psycopg2
 wheel 
 gunicorn
-
